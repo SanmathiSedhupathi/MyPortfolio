@@ -1,27 +1,21 @@
-# ---------- Stage 1: Build the React app ----------
+# Use Node.js 18-alpine image
 FROM node:18-alpine AS build
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Install dependencies
+# Copy package files and install dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm install --unsafe-perm=true  # Add this line to ensure proper permission handling
 
-# Copy the rest of the app
+# Ensure react-scripts is executable (if permission issue persists)
+RUN chmod +x node_modules/.bin/react-scripts
+
+# Copy the rest of the files into the container
 COPY . .
 
-# Build the React app
+# Build the application
 RUN npm run build
 
-# ---------- Stage 2: Serve the app using Nginx ----------
-FROM nginx:alpine
-
-# Copy build output from previous stage to Nginx directory
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Expose port 80 for web traffic
-EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Expose necessary port (optional, depending on your app)
+EXPOSE 3000
