@@ -13,12 +13,6 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 sh "docker build -t $IMAGE_NAME ."
@@ -39,15 +33,14 @@ pipeline {
                 sh "docker run -d -p 3000:80 --name $CONTAINER_NAME $IMAGE_NAME"
             }
         }
-
     }
 
     post {
         success {
-            echo '🎉 Deployment successful!'
+            echo '🎉 Portfolio deployed at http://<your-ip>:3000'
         }
         failure {
-            echo '❌ Build or deployment failed.'
+            echo '❌ Deployment failed.'
         }
     }
 }
