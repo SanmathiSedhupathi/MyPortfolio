@@ -5,14 +5,14 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 # Copy package.json and package-lock.json files first
-# This helps leverage Docker's cache to install dependencies only when these files change
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --unsafe-perm=true
+# Install dependencies (use npm ci for clean installation)
+RUN npm ci --unsafe-perm=true
 
-# Ensure that the node_modules/.bin folder has executable permissions
-RUN chmod -R +x /app/node_modules/.bin
+# Ensure that node_modules/.bin and react-scripts are executable
+RUN chmod -R +x /app/node_modules/.bin && \
+    chmod +x /app/node_modules/.bin/react-scripts
 
 # Copy the rest of the application files
 COPY . .
